@@ -66,5 +66,6 @@ public class DirectoryProcessor {
         File sourceDir = new File(args[SOURCE_DIR]);
         DirectoryProcessor processor = new DirectoryProcessor(sourceDir, commandFile);
         processor.process();
+
     }
 }

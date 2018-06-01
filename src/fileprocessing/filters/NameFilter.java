@@ -1,17 +1,18 @@
 package fileprocessing.filters;
 
 import java.io.File;
+import java.io.FileFilter;
 
-public class FileFilter implements Filter {
+class NameFilter implements FileFilter {
 
     private final String wantedName;
-    public FileFilter(String wantedName){
+    public NameFilter(String wantedName){
         this.wantedName = wantedName;
     }
 
 
     @Override
-    public boolean isFilePass(File file) {
+    public boolean accept(File file) {
         return file.getName().equals(wantedName);
     }
 }

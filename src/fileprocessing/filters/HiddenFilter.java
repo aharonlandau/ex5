@@ -1,18 +1,19 @@
 package fileprocessing.filters;
 
 import java.io.File;
+import java.io.FileFilter;
 
-public class HiddenFilter implements Filter {
+class HiddenFilter implements FileFilter {
 
-    private final String writable;
+    private final boolean hidden;
 
-    public HiddenFilter(String writable){
-        this.writable = writable;
+    public HiddenFilter(boolean hidden){
+        this.hidden = hidden;
     }
 
     @Override
-    public boolean isFilePass(File file) {
-        if (writable.equals("NO")) return ! file.isHidden();
-        else return file.isHidden();
+    public boolean accept(File file) {
+        if (!hidden) return file.isHidden();
+        else return !file.isHidden();
     }
 }

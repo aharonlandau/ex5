@@ -1,18 +1,19 @@
 package fileprocessing.filters;
 
 import java.io.File;
+import java.io.FileFilter;
 
-public class WritableFilter implements Filter {
+class WritableFilter implements FileFilter {
 
-    private final String writable;
+    private final boolean writable;
 
-    public WritableFilter(String writable){
+    public WritableFilter(boolean writable){
         this.writable = writable;
     }
 
     @Override
-    public boolean isFilePass(File file) {
-        if (writable.equals("NO")) return ! file.canWrite();
+    public boolean accept(File file) {
+        if (!this.writable) return ! file.canWrite();
         else return file.canWrite();
     }
 }

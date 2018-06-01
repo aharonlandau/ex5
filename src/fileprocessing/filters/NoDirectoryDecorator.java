@@ -3,16 +3,19 @@ package fileprocessing.filters;
 import java.io.File;
 import java.io.FileFilter;
 
-class NotDecorator implements FileFilter {
+/**
+ * NoDirectoryDecorator
+ */
+class NoDirectoryDecorator implements FileFilter {
 
     private FileFilter filter;
-    public NotDecorator(FileFilter filter) {
+
+    public NoDirectoryDecorator(FileFilter filter){
         this.filter = filter;
     }
 
-
     @Override
     public boolean accept(File file) {
-        return !filter.accept(file);
+        return filter.accept(file) && file.isFile();
     }
 }

@@ -1,18 +1,19 @@
 package fileprocessing.filters;
 
 import java.io.File;
+import java.io.FileFilter;
 
-public class ExecutableFilter implements Filter {
+class ExecutableFilter implements FileFilter {
 
-    private final String writable;
+    private final boolean executable;
 
-    public ExecutableFilter(String writable){
-        this.writable = writable;
+    public ExecutableFilter(boolean executable){
+        this.executable = executable;
     }
 
     @Override
-    public boolean isFilePass(File file) {
-        if (writable.equals("NO")) return ! file.canExecute();
+    public boolean accept(File file) {
+        if (!this.executable) return ! file.canExecute();
         else return file.canExecute();
     }
 }

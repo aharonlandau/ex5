@@ -19,7 +19,7 @@ public class DirectoryProcessor {
     private void process() throws IOException{
         int lineNum = 1;
         String line = commandFile.readLine();
-        String filterLine = null, orderLine ;
+        String filterLine = null, orderLine =null;
         LinkedList<Section> sections = new LinkedList<Section>();
         while(line != null){
             switch (lineNum){
@@ -37,33 +37,45 @@ public class DirectoryProcessor {
                     }
                     break;
                 case 4:
+                    orderLine = line;
                     if (line == "FILTER"){
                         lineNum = 1;
-                        sections.add(new Section(filterLine, "abs"));
-                        break;
+                        orderLine = "";
                     }
-                    orderLine = line;
-                    sections.add(new Section(filterLine, orderLine));
+                    sections.add(new Section(filterLine, orderLine, sourceDir));
                     break;
 
             }
-
             line = commandFile.readLine();
-            lineNum = lineNum == 4? 1: lineNum+1;
+            lineNum = lineNum == 4? 1: lineNum + 1;
+        }
+
+        if(lineNum == 4){
+            sections.add(new Section(filterLine, orderLine, sourceDir)); 
         }
         for (Section section:sections) {
-            //TODO filtering and ordering
+            section.process();
         }
     }
 
     public static void main(String[] args) throws IOException {
+        if(args.length != 2){
+            System.err.println("ERROR: Wrong usage. Should recieve 2 arguments");
+            return;
+        }
+
         FileReader commandFile = null;
         try {
             commandFile = new FileReader(args[COMMAND_FILE]);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            System.err.println("ERROR: could not find commands file.");
+            return;
         }
         File sourceDir = new File(args[SOURCE_DIR]);
+        if(!sourceDir.exists()){
+            System.out.println("ERROR: could not find dir");
+            return;
+        }
         DirectoryProcessor processor = new DirectoryProcessor(sourceDir, commandFile);
         processor.process();
 

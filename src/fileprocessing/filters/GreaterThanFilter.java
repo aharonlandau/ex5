@@ -1,8 +1,9 @@
 package fileprocessing.filters;
 
 import java.io.File;
+import java.io.FileFilter;
 
-public class GreaterThanFilter implements Filter{
+class GreaterThanFilter implements FileFilter{
 
     private double minSize;
     public GreaterThanFilter(double minSize){
@@ -10,7 +11,7 @@ public class GreaterThanFilter implements Filter{
     }
 
     @Override
-    public boolean isFilePass(File file) {
-        return (double)file.length()/1000 > minSize;
+    public boolean accept(File file) {
+        return ((double)file.length() / Parser.KILOBYTE_BYTES) > minSize;
     }
 }

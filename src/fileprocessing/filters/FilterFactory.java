@@ -1,67 +1,93 @@
 package fileprocessing.filters;
 
 import java.io.File;
+import java.io.FileFilter;
 
 public class FilterFactory {
 
     private static final int FILTER_PLACE = 0;
 
-    private static final int FIRST_PARAM_INDEX = 1;
-
-    private static final int SECOND_PARAM_INDEX = 2;
-
-    private final boolean NO = false;
-
-    private static final Filter all = new Filter(){
+    private static final FileFilter all = new FileFilter(){
         @Override
-        public boolean isFilePass(File file) {
+        public boolean accept(File file) {
             return true;
         }
     };
 
-    public static Filter create(String filterLine){
+    public static FileFilter create(String filterLine) throws BadFilterException{
         String[] params = filterLine.split("#");
-        Filter filter=null;
-        switch (params[FILTER_PLACE]){
-            case "all":
-                filter = all;
-                break;
-            case "greater_than":
-                filter = new GreaterThanFilter(Double.parseDouble(params[FIRST_PARAM_INDEX]));
-                break;
-            case "between":
-                double minVal = Double.parseDouble(params[FIRST_PARAM_INDEX]);
-                double maxVal = Double.parseDouble(params[SECOND_PARAM_INDEX]);
-                if(maxVal >= minVal) {
-                    //TODO
-                }
-                filter = new BetweenFilter(minVal, maxVal);
-                break;
-            case "smaller_than":
-                maxVal = Double.parseDouble(params[FIRST_PARAM_INDEX]);
-                filter = new SmallerThhenFilter(maxVal);
-                break;
-            case "file":
-                String wantedName = params[FIRST_PARAM_INDEX];
-                filter = new FileFilter(wantedName);
-            case "contains":
-                String wantedStr = params[FIRST_PARAM_INDEX];
-                filter = new ContainsFilter(wantedStr);
-            case "prefix":
-                String prefix = params[FIRST_PARAM_INDEX];
-                filter = new PrefixFilter(prefix);
-            case "suffix":
-                String suffix = params[FIRST_PARAM_INDEX];
-                filter = new SuffixFilter(suffix);
-            case "writable":
-                filter = new WritableFilter(params[FIRST_PARAM_INDEX]);
-            case "executable":
-                filter = new ExecutableFilter(params[FIRST_PARAM_INDEX]);
+        FileFilter filter = null;
+            try{
+                switch (params[FILTER_PLACE]){
+                case "greater_than":
+                    filter = new GreaterThanFilter(Parser.StringToDouble(params));
+                    break;
+
+                case "between":
+                    double[] parsed = Parser.StringTo2Doubles(params);
+                    if(parsed[0] > parsed[1]) {
+                        throw new BadFilterException();
+                    }
+                    filter = new BetweenFilter(parsed[0], parsed[1]);
+                    break;
+
+                case "smaller_than":
+                    filter = new SmallerThanFilter(Parser.StringToDouble(params));
+                    break;
+
+                case "file":
+                    String wantedName = Parser.stringToString(params);
+                    filter = new NameFilter(wantedName);
+                    break;
+
+                case "contains":
+                    String wantedStr = Parser.stringToString(params);
+                    filter = new ContainsFilter(wantedStr);
+                    break;
+
+                case "prefix":
+                    String prefix = Parser.stringToString(params);
+                    filter = new PrefixFilter(prefix);
+                    break;
+
+                case "suffix":
+                    String suffix = Parser.stringToString(params);
+                    filter = new SuffixFilter(suffix);
+                    break;
+
+                case "writable":
+                    filter = new WritableFilter(Parser.stringToBoolean(params));
+                    break;
+
+                case "executable":
+                    filter = new ExecutableFilter(Parser.stringToBoolean(params));
+                    break;
+
+                case "hidden":
+                    filter = new HiddenFilter(Parser.stringToBoolean(params));
+                    break;
+                    
+                case "all":
+                    filter = all;
+                    break;
+
+                default:
+                    throw new BadFilterException();
+            }
+        }
+        catch(NumberFormatException e){
+            throw new BadFilterException();
         }
 
-        if (params[params.length - 1].equals("NOT")){
+        if (Parser.containsNOT(params)){
             filter = new NotDecorator(filter);
         }
+        filter = new NoDirectoryDecorator(filter);
         return filter;
+    }
+
+
+    public static FileFilter defaultFilter(){
+        return new NoDirectoryDecorator(all);
     }
 }

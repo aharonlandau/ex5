@@ -1,8 +1,9 @@
 package fileprocessing.filters;
 
 import java.io.File;
+import java.io.FileFilter;
 
-public class SuffixFilter implements Filter {
+class SuffixFilter implements FileFilter {
 
     private final String suffix;
 
@@ -12,7 +13,7 @@ public class SuffixFilter implements Filter {
 
 
     @Override
-    public boolean isFilePass(File file) {
+    public boolean accept(File file) {
         return file.getName().endsWith(suffix);
     }
 }

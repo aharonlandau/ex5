@@ -1,7 +1,9 @@
 package fileprocessing.filters;
-import java.io.File;
 
-public class ContainsFilter implements Filter {
+import java.io.File;
+import java.io.FileFilter;
+
+class ContainsFilter implements FileFilter {
 
     private final String wantedStr;
 
@@ -11,7 +13,7 @@ public class ContainsFilter implements Filter {
 
 
     @Override
-    public boolean isFilePass(File file) {
+    public boolean accept(File file) {
         return file.getName().contains(wantedStr);
     }
 }

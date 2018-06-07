@@ -1,5 +1,7 @@
 package filesprocessing.filters;
 /**
- * BadFilterException
+ * BadFilterException, thrown when there is problem with the filter line FilterFactory parse.
  */
-public class BadFilterException extends Exception { }
+public class BadFilterException extends Exception {
+    private static final long serialVersionUID = 1L;
+ }

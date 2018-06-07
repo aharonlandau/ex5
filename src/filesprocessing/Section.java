@@ -10,7 +10,13 @@ import filesprocessing.filters.FilterFactory;
 import filesprocessing.orders.OrderFactory;
 import filesprocessing.orders.BadOrderException;
 
+/**
+ * class that represent a section in the commands file
+ * each instance handle a single section process (filtering and ordering a folder).
+ */
 public class Section {
+
+    private static final String WARNING_MESSAGE = "Warning in line %d";
 
     public static final String NO_ORDER_LINE = null;
 
@@ -31,7 +37,7 @@ public class Section {
             filter = FilterFactory.create(filterLine);
         }
         catch(BadFilterException e){
-            System.err.println("Warning in line " + this.filterLineNum);
+            System.err.println(String.format(WARNING_MESSAGE, this.filterLineNum));
             filter = FilterFactory.defaultFilter();
         }
         return filter;
@@ -45,7 +51,7 @@ public class Section {
                 order = OrderFactory.create(orderLine);
             }
             catch(BadOrderException e) {
-                System.err.println("Warning in line " + (this.filterLineNum + 2));
+                System.err.println(String.format(WARNING_MESSAGE, this.filterLineNum + 2));
                 order = OrderFactory.defaultOrder();
             }
         }
@@ -55,6 +61,10 @@ public class Section {
         return order;
     }
 
+    /**
+     * calls for each factory and gets an FileFilter amd Comparator instances,
+     * filtering, ordering and then printing.
+     */
     public void process(){
         FileFilter filter = this.getFilter(); 
         Comparator<File> order = this.getOrder();

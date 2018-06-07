@@ -1,0 +1,18 @@
+aharon.landau
+bar.azaria
+
+Aharon Landau
+Bar Azaria
+
+205366917
+207866567
+
+README for ex5.jar
+
+=============================
+=          Design           =
+=============================
+There are 4 main classes in this project, the other are exceptions/filters/orders.
+DirectoryProcessor manages parsing the commands file, find type 2 errors and create section objects.
+Section constuctor gets 3 parameters, filter line, order line and folder(File object). the Section.process()
+method filter and ordering the files in the folder, and print the 

@@ -1,12 +1,25 @@
 package filesprocessing.orders;
 
 import java.util.Comparator;
-
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import java.io.File;
 
+
+/**
+ * static class that manages Comparator<File> object creation
+ * and parsing order lines.
+ */
 public abstract class OrderFactory {
+
+    private static final String REVERSE_SUFFIX = "REVERSE";
+
+    private static final String ABS_ORDER = "abs";
+
+    private static final String TYPE_ORDER = "type";
+
+    private static final String SIZE_ORDER = "size";
+
+    
+
 
     private static final Comparator<File> absOrder = new Comparator<File>(){
         @Override
@@ -32,11 +45,11 @@ public abstract class OrderFactory {
 
         private String getType(String filename) {
             int idx = filename.lastIndexOf('.');
-            if (idx == 0) {
+            if (idx <= 0) { // dot at start or no dots
                 return "";
             }
             else {
-                return filename.substring(idx,filename.length());
+                return filename.substring(idx + 1);
             }
         }
     };
@@ -55,30 +68,35 @@ public abstract class OrderFactory {
     
     };
 
-
+    /**
+     * creates objects of Comparator<File>, by parsing an string that contains a line
+     * from commands file.
+     * @param orderLine the line from file that represent the type of order
+     * @return an Comparator object that compare by the way required.
+     */
     public static Comparator<File> create(String orderLine) throws BadOrderException{
         String[] params = orderLine.split("#");
         if (params.length > 2) {
             throw new BadOrderException();
         }
-        if (params.length == 2 && !params[1].equals("REVERSE")) {
+        if (params.length == 2 && !params[1].equals(REVERSE_SUFFIX)) {
             throw new BadOrderException();
         }
         Comparator<File> order = null;
         switch(params[0]){
-            case "abs":
+            case ABS_ORDER:
                 order = absOrder;
                 break;
-            case "type":
+            case TYPE_ORDER:
                 order = typeOrder;
                 break;
-            case "size":
+            case SIZE_ORDER:
                 order = sizeOrder;
                 break;
             default:
                 throw new BadOrderException();
         }
-        if (params.length == 2 && params[1].equals("REVERSE")) {
+        if (params.length == 2 && params[1].equals(REVERSE_SUFFIX)) {
             order = new ReverseDecorator(order);
         }
         return order;

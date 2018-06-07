@@ -1,27 +1,39 @@
 package filesprocessing.filters;
 
+
+/**
+ * a helper class that contains static method for parsing the filters parameters and 
+ * check for validation. 
+ */
 abstract class Parser {
     private static final int FIRST_PARAM_INDEX = 1;
 
     private static final int SECOND_PARAM_INDEX = 2;
+
+    private static final String NOT_SUFFIX = "NOT";
 
     /**
      * the number of bytes in kilobyte
      */
     public static final int KILOBYTE_BYTES = 1024;
 
-
+    /**
+     * checks if the amout of # matches the amout the filter required.
+     */
     private static boolean isParamsNumberValid(int required, String[] params) {
         if(params.length != required + 1 && params.length != required + 2){
             return false;
         }
-        if (params.length == required + 2 && !params[params.length -1].equals("NOT")){
+        if (params.length == required + 2 && !params[params.length - 1].equals(NOT_SUFFIX)){
             return false;
         }
         return true;
     }
 
-
+    /**
+     * almost all filters (except 1) require only 1 parameter, so we 
+     * overloaded this method with 'default' parameter.
+     */
     private static boolean isParamsNumberValid(String[] params) {
         return isParamsNumberValid(1, params);
     }
@@ -61,7 +73,9 @@ abstract class Parser {
         if(parsedParams[0] < 0 || parsedParams[1] < 0) {
             throw new BadFilterException();
         }
-        //TODO - think if we should move 0<1 to here
+        if(parsedParams[0] > parsedParams[1]) {
+            throw new BadFilterException();
+        }
         return parsedParams;
     }
 
@@ -73,6 +87,6 @@ abstract class Parser {
     }
 
     public static boolean containsNOT(String[] params) {
-        return params[params.length - 1].equals("NOT");
+        return params[params.length - 1].equals(NOT_SUFFIX);
     }
 }

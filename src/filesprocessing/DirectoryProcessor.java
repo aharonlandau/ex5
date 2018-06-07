@@ -3,6 +3,10 @@ package filesprocessing;
 import java.io.*;
 import java.util.LinkedList;
 
+/**
+ * class that handle the whole directory processing, parsing the parameters,
+ * parsing the command file and create instances of sections.
+ */
 public class DirectoryProcessor {
 
 
@@ -15,6 +19,16 @@ public class DirectoryProcessor {
     
     private static final String ORDER_TITLE = "ORDER";
 
+    private static final String BAD_ARGUMENTS_ERROR = "ERROR: Wrong usage. Should recieve 2 arguments";
+
+    private static final String BAD_COMMANDFILE_ERROR = "ERROR: could not find commands file.";
+
+    private static final String BAD_SOURCEDIR_ERROR = "ERROR: No files in sourcedir";
+
+    private static final String BAD_FORMAT_ERROR  = "ERROR: Bad format of Commands File";
+
+    private static final String BAD_SUBSECTION_ERROR = "ERROR: Bad subsection name";
+
 
     private File sourceDir;
     private BufferedReader commandFile;
@@ -24,7 +38,11 @@ public class DirectoryProcessor {
         this.commandFile = new BufferedReader(commandFile);
         this.sourceDir = sourceDir;
     }
-
+    
+    /**
+     * Reading the commandFile and parsing him, creates a linkedList (add - o(1) iterate - o(n))
+     * of section, the process each section.
+     */
     private void process() throws IOException, BadFormatException, BadSubsectionException{
         int sectionLineNum = 1, lineNum = 0, filterLineNum = 0;
         String line = commandFile.readLine();
@@ -69,14 +87,14 @@ public class DirectoryProcessor {
         }
 
 
-        for (Section section:sections) {
+        for (Section section : sections) {
             section.process();
         }
     }
 
     public static void main(String[] args) throws IOException {
         if(args.length != 2){
-            System.err.println("ERROR: Wrong usage. Should recieve 2 arguments");
+            System.err.println(BAD_ARGUMENTS_ERROR);
             return;
         }
 
@@ -84,13 +102,14 @@ public class DirectoryProcessor {
         try {
             commandFile = new FileReader(args[COMMAND_FILE]);
         } catch (FileNotFoundException e) {
-            System.err.println("ERROR: could not find commands file.");
+            System.err.println(BAD_COMMANDFILE_ERROR);
             return;
         }
 
         File sourceDir = new File(args[SOURCE_DIR]);
         if(!sourceDir.exists()){
-            System.out.println("ERROR: No files in sourcedir");
+            System.out.println(BAD_SOURCEDIR_ERROR);
+            commandFile.close();
             return;
         }
 
@@ -100,11 +119,11 @@ public class DirectoryProcessor {
             processor.process();
         }
         catch(BadFormatException e) {
-            System.err.println("ERROR: Bad format of Commands File");
+            System.err.println(BAD_FORMAT_ERROR);
         }
         catch(BadSubsectionException e) {
-            System.err.println("ERROR: Bad subsection name");
+            System.err.println(BAD_SUBSECTION_ERROR);
         }
-
+        commandFile.close();
     }
 }
